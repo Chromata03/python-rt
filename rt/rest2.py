@@ -859,10 +859,10 @@ class Rt:
 
     def get_attachments(
         self,
-        ticket_id: typing.Union[str, int],
+        transaction_id: typing.Union[str, int],
         query_filter: typing.Optional[list[dict[str, str]]] = None,
     ) -> typing.Sequence[dict[str, str]]:
-        """Get attachment list for a given ticket.
+        """Get attachment list for a given transaction.
 
         Example of a return result:
 
@@ -879,11 +879,11 @@ class Rt:
                 }
             ]
 
-        :param ticket_id: ID of ticket
+        :param transaction_id: ID of transaction
         :param query_filter: JSON search filter, defaults to "filename is not empty"
-        :returns: List of tuples for attachments belonging to given ticket.
+        :returns: List of tuples for attachments belonging to given transaction.
                   Tuple format: (id, name, content_type, size)
-                  Returns None if ticket does not exist.
+                  Returns None if transaction does not exist.
         """
         attachments = []
 
@@ -891,8 +891,8 @@ class Rt:
             query_filter = [{'field': 'Filename', 'operator': 'IS NOT', 'value': ''}]
 
         for item in self.__paged_request(
-            f'ticket/{ticket_id}/attachments',
-            json_data=query_filter,
+            f'transaction/{transaction_id}/attachments',
+            json_data=None,
             params={'fields': 'Filename,ContentType,ContentLength'},
         ):
             attachments.append(item)
@@ -901,15 +901,15 @@ class Rt:
 
     def get_attachments_ids(
         self,
-        ticket_id: typing.Union[str, int],
+        transaction_id: typing.Union[str, int],
         query_filter: typing.Optional[list[dict[str, str]]] = None,
     ) -> list[int]:
-        """Get IDs of attachments for given ticket.
+        """Get IDs of attachments for given transaction.
 
-        :param ticket_id: ID of ticket
+        :param transaction_id: ID of transaction
         :param query_filter: JSON search filter, defaults to "filename is not empty"
         :returns: List of IDs (type int) of attachments belonging to given
-                  ticket. Returns an empty list if ticket does not exist.
+                  transaction. Returns an empty list if transaction does not exist.
         """
         attachments = []
 
@@ -917,7 +917,7 @@ class Rt:
             query_filter = [{'field': 'Filename', 'operator': 'IS NOT', 'value': ''}]
 
         for item in self.__paged_request(
-            f'ticket/{ticket_id}/attachments',
+            f'transaction/{transaction_id}/attachments',
             json_data=query_filter,
         ):
             attachments.append(int(item['id']))
@@ -1551,7 +1551,7 @@ class Rt:
     def take(self, ticket_id: typing.Union[str, int]) -> bool:
         """Take ticket.
 
-        :param ticket_id: ID of ticket to be taken
+        :param ticket_id: ID of ticket to be merged
         :returns: ``True``
                       Operation was successful
                   ``False``
@@ -1571,7 +1571,7 @@ class Rt:
     def untake(self, ticket_id: typing.Union[str, int]) -> bool:
         """Untake ticket.
 
-        :param ticket_id: ID of ticket to be untaken
+        :param ticket_id: ID of ticket to be merged
         :returns: ``True``
                       Operation was successful
                   ``False``
@@ -1591,7 +1591,7 @@ class Rt:
     def steal(self, ticket_id: typing.Union[str, int]) -> bool:
         """Steal ticket.
 
-        :param ticket_id: ID of ticket to be stolen
+        :param ticket_id: ID of ticket to be merged
         :returns: ``True``
                       Operation was successful
                   ``False``
@@ -2565,7 +2565,7 @@ class AsyncRt:
 
     async def get_attachments(
         self,
-        ticket_id: typing.Union[str, int],
+        transaction_id: typing.Union[str, int],
         query_filter: typing.Optional[list[dict[str, str]]] = None,
     ) -> collections.abc.AsyncIterator[dict[str, typing.Any]]:
         """Get attachment list for a given ticket.
@@ -2585,7 +2585,7 @@ class AsyncRt:
                 }
             ]
 
-        :param ticket_id: ID of ticket
+        :param transaction_id: ID of transaction
         :param query_filter: JSON search filter, defaults to "filename is not empty"
         :returns: Iterator of attachments belonging to given ticket. collections.abc.AsyncIterator[typing.Dict[str, str]]
         """
@@ -2593,7 +2593,7 @@ class AsyncRt:
             query_filter = [{'field': 'Filename', 'operator': 'IS NOT', 'value': ''}]
 
         async for item in self.__paged_request(
-            f'ticket/{ticket_id}/attachments',
+            f'transaction/{transaction_id}/attachments',
             json_data=query_filter,
             params={'fields': 'Filename,ContentType,ContentLength'},
         ):
@@ -3248,7 +3248,7 @@ class AsyncRt:
     async def take(self, ticket_id: typing.Union[str, int]) -> bool:
         """Take ticket.
 
-        :param ticket_id: ID of ticket to be taken
+        :param ticket_id: ID of ticket to be merged
         :returns: ``True``
                       Operation was successful
                   ``False``
@@ -3268,7 +3268,7 @@ class AsyncRt:
     async def untake(self, ticket_id: typing.Union[str, int]) -> bool:
         """Untake ticket.
 
-        :param ticket_id: ID of ticket to be untaken
+        :param ticket_id: ID of ticket to be merged
         :returns: ``True``
                       Operation was successful
                   ``False``
@@ -3288,7 +3288,7 @@ class AsyncRt:
     async def steal(self, ticket_id: typing.Union[str, int]) -> bool:
         """Steal ticket.
 
-        :param ticket_id: ID of ticket to be stolen
+        :param ticket_id: ID of ticket to be merged
         :returns: ``True``
                       Operation was successful
                   ``False``
